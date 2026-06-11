@@ -1,18 +1,21 @@
 import logging
+import re
 
 logger = logging.getLogger(__name__)
 
 class MessageHandler:
     """Handler untuk pesan pribadi (private chat)."""
     
-    def __init__(self, dispatcher):
+    def __init__(self, dispatcher, ai_manager=None):
         """
         Inisialisasi message handler.
         
         Args:
             dispatcher: CommandDispatcher instance
+            ai_manager: AIManager instance (opsional)
         """
         self.dispatcher = dispatcher
+        self.ai_manager = ai_manager
     
     def handle(self, msg, client):
         """
@@ -76,6 +79,10 @@ class MessageHandler:
         # Asking for help
         if any(word in text_lower for word in ['bantuan', 'help', 'tolong', 'caranya', 'bagaimana']):
             return f"Silakan katakan apa yang Anda butuhkan, {sender_name}. Atau ketik !help untuk melihat perintah saya."
+        
+        # Default: offer AI if enabled
+        if self.ai_manager and self.ai_manager.is_enabled():
+            return f"Saya bisa membantu dengan percakapan biasa atau gunakan !ai <pertanyaan> untuk AI response. Ada yang bisa saya bantu, {sender_name}?"
         
         # Default response
         return f"Saya menerima pesan Anda, {sender_name}. Ketik !help jika butuh bantuan atau perintah tertentu."

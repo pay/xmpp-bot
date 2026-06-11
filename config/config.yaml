@@ -28,3 +28,19 @@ plugins:
     - "echo"
     - "admin"
     - "help"
+
+# Konfigurasi AI (OpenAI)
+ai:
+  enabled: true
+  provider: "openai"  # openai atau local
+  openai:
+    api_key: "sk-your-api-key-here"  # Ganti dengan API key Anda
+    model: "gpt-4o-mini"  # atau gpt-4, gpt-3.5-turbo
+    temperature: 0.7
+    max_tokens: 500
+  system_prompt: |
+    Anda adalah BotAsisten, asisten AI yang ramah, profesional, dan membantu.
+    Anda terhubung melalui XMPP messaging.
+    Respons dalam bahasa yang sama dengan pertanyaan pengguna.
+    Jangan terlalu panjang, maksimal 1000 karakter per respons.
+    Jika tidak tahu jawaban, katakan dengan jujur dan tawarkan alternatif.

@@ -67,3 +67,7 @@ class ConfigLoader:
     def get_enabled_plugins(self) -> list:
         """Ambil daftar plugin yang diaktifkan."""
         return self.get('plugins.enabled', [])
+    
+    def get_ai_config(self) -> dict:
+        """Ambil konfigurasi AI."""
+        return self.get('ai', {})

@@ -4,6 +4,7 @@ from src.core.connection import XMPPConnection
 from src.core.dispatcher import CommandDispatcher
 from src.handlers.message import MessageHandler
 from src.handlers.groupchat import GroupChatHandler
+from src.ai.ai_manager import AIManager
 
 logger = logging.getLogger(__name__)
 
@@ -31,9 +32,12 @@ class XMPPBot:
         self.client = self.connection.get_client()
         self.dispatcher = CommandDispatcher()
         
+        # Inisialisasi AI
+        self.ai_manager = AIManager(self.config.get_ai_config())
+        
         # Register handlers
-        self.message_handler = MessageHandler(self.dispatcher)
-        self.groupchat_handler = GroupChatHandler(self.dispatcher)
+        self.message_handler = MessageHandler(self.dispatcher, self.ai_manager)
+        self.groupchat_handler = GroupChatHandler(self.dispatcher, self.ai_manager)
         
         self._setup_handlers()
         self._register_commands()
@@ -96,6 +100,11 @@ class XMPPBot:
             self._cmd_ping,
             "Cek status bot"
         )
+        self.dispatcher.register_command(
+            "ai",
+            self._cmd_ai,
+            "Query AI (ai <pertanyaan>)"
+        )
     
     def _cmd_help(self, args: str, context: dict) -> str:
         """Command: !help - Tampilkan bantuan."""
@@ -114,6 +123,16 @@ class XMPPBot:
     def _cmd_ping(self, args: str, context: dict) -> str:
         """Command: !ping - Cek status bot."""
         return "Pong! Bot masih online dan siap melayani. 🤖"
+    
+    def _cmd_ai(self, args: str, context: dict) -> str:
+        """Command: !ai <pertanyaan> - Query AI."""
+        if not self.ai_manager.is_enabled():
+            return "⚠️ AI feature tidak tersedia. Hubungi admin."
+        
+        if not args:
+            return "Gunakan: !ai <pertanyaan>"
+        
+        return self.ai_manager.generate_response(args, context)
     
     def _join_rooms(self):
         """Bergabung dengan MUC rooms yang dikonfigurasi."""
@@ -135,6 +154,10 @@ class XMPPBot:
         logger.info(f"Bot XMPP '{self.config.get_bot_nick()}' dimulai...")
         logger.info(f"JID: {self.config.get_bot_jid()}")
         logger.info(f"Server: {self.config.get_server_host()}:{self.config.get_server_port()}")
+        if self.ai_manager.is_enabled():
+            logger.info(f"AI Feature: ENABLED ({self.ai_manager.provider})")
+        else:
+            logger.info("AI Feature: DISABLED")
         logger.info("=" * 60)
         
         if self.connection.connect():
