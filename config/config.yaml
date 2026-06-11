@@ -1,0 +1,30 @@
+# Konfigurasi Bot XMPP - BotAsisten
+bot:
+  jid: "botasisten@example.com"
+  password: "bot_password"
+  nick: "BotAsisten"
+  
+server:
+  host: "example.com"
+  port: 5222
+  use_tls: true
+  use_ssl: false
+
+muc:
+  # Room yang akan diikuti bot
+  rooms:
+    - jid: "tim_proyek@conference.example.com"
+      nick: "BotAsisten"
+    - jid: "general@conference.example.com"
+      nick: "BotAsisten"
+
+logging:
+  config_file: "config/logging.yaml"
+  level: "INFO"
+
+# Plugin yang akan dimuat
+plugins:
+  enabled:
+    - "echo"
+    - "admin"
+    - "help"
